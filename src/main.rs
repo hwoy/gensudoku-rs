@@ -178,16 +178,16 @@ fn main() -> std::io::Result<()> {
     );
 
     if let Some(pathbuf) = filename {
-        let file = OpenOptions::new()
+        let writer = OpenOptions::new()
             .write(true)
             .create(true)
             .truncate(true)
             .open(pathbuf)
             .unwrap();
-        print_board_tex(file, nbseed, sbid, nblank, sd, nboard)?;
+        print_board_tex(writer, nbseed, sbid, nblank, sd, nboard)?;
     } else {
-        let file = std::io::stdout().lock();
-        print_board_tex(file, nbseed, sbid, nblank, sd, nboard)?;
+        let writer = std::io::stdout().lock();
+        print_board_tex(writer, nbseed, sbid, nblank, sd, nboard)?;
     }
 
     Ok(())
