@@ -17,16 +17,15 @@ fn print_board_tex(
     sd: u32,
     nboard: u32,
 ) -> std::io::Result<()> {
-    let mut game = sudoku_sys::sgs_game::new(0, nblank);
+    let mut game = sudoku_sys::sgs_game::new();
 
     writer.write_fmt(format_args!("{}\n", def::HEAD_TEX))?;
 
     for n in 0..nboard {
-        game.seed(nbseed + n);
-        game.setbid(sbid + n);
-
-        let mut game = game.clone();
-        game.createsudoku_rnd(sd);
+        game.seed(nbseed + n)
+            .setbid(sbid + n)
+            .setnblank(nblank)
+            .createsudoku_rnd(sd);
 
         writer.write_fmt(format_args!(
             r##"\noindent \verb|N_BLANKSEED = {}, SBID = {}, N = {}, SN_BLANK = {}, SD = {}| \newline "##,

@@ -360,7 +360,7 @@ checksum = "73473c0e59e6d5812c5dfe2a064a6444949f089e20eec9a2e5506596494e4623"
 [[package]]
 name = "sudoku-rs"
 version = "0.1.0"
-source = "git+https://github.com/hwoy/sudoku-rs.git#cae68a379124b975386aa3e3ef07c366d2cabc25"
+source = "git+https://github.com/hwoy/sudoku-rs.git#6aa35ccd20a4d177ba33ea4b46db0e8e495c58ff"
 dependencies = [
  "sudoku-sys",
 ]
