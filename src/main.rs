@@ -24,6 +24,8 @@ fn print_board_tex(
     for n in 0..nboard {
         game.seed(nbseed + n);
         game.setbid(sbid + n);
+
+        let mut game = game.clone();
         game.createsudoku_rnd(sd);
 
         writer.write_fmt(format_args!(
@@ -59,8 +61,6 @@ fn print_board_tex(
         if n + 1 < nboard {
             writer.write_fmt(format_args!("\\newpage\n\n"))?;
         }
-
-        game.setnblank(nblank);
     }
 
     writer.write_fmt(format_args!("{}\n", def::TAIL_TEX))?;
