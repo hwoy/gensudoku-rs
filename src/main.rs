@@ -5,13 +5,16 @@ mod def;
 extern crate clap;
 use clap::{arg, value_parser, ArgAction};
 
+use std::fs::OpenOptions;
 use std::io::Write;
+use std::path::PathBuf;
 
 fn print_board_tex(
     mut writer: impl Write,
     game: &mut sudoku_sys::sgs_game,
     nbseed: sudoku_sys::URND32,
     sbid: sudoku_sys::URND32,
+    nblank: u32,
     sd: u32,
     nboard: u32,
 ) -> std::io::Result<()> {
@@ -23,7 +26,7 @@ fn print_board_tex(
         game.createsudoku_rnd(sd);
 
         writer.write_fmt(format_args!(
-            r##"\noindent \verb|N_BLANKSEED = {}, SBID = {}| \verb|N = {}, SN_BLANK = {}, SD = {}| \newline "##,
+            r##"\noindent \verb|N_BLANKSEED = {}, SBID = {}, N = {}, SN_BLANK = {}, SD = {}| \newline "##,
             nbseed + n,
             sbid + n,
             n,
@@ -55,6 +58,8 @@ fn print_board_tex(
         if n + 1 < nboard {
             writer.write_fmt(format_args!("\\newpage\n\n"))?;
         }
+
+        game.setnblank(nblank);
     }
 
     writer.write_fmt(format_args!("{}\n", def::TAIL_TEX))?;
@@ -68,7 +73,14 @@ fn parse_command_line(
     def_nblank: u32,
     def_sd: u32,
     def_nboard: u32,
-) -> (sudoku_sys::URND32, sudoku_sys::URND32, u32, u32, u32) {
+) -> (
+    sudoku_sys::URND32,
+    sudoku_sys::URND32,
+    u32,
+    u32,
+    u32,
+    Option<PathBuf>,
+) {
     let matches = clap::Command::new("gensudoku-rs")
         .arg(
             arg!(--nbseed <NBSEED> "A seed for RNG")
@@ -96,6 +108,11 @@ fn parse_command_line(
                 .value_parser(value_parser!(u32))
                 .action(ArgAction::Set),
         )
+        .arg(
+            arg!(--file <FILE> "Out put file")
+                .value_parser(value_parser!(PathBuf))
+                .action(ArgAction::Set),
+        )
         .get_matches();
 
     let nbseed = if let Some(val) = matches.get_one::<sudoku_sys::URND32>("nbseed") {
@@ -114,7 +131,7 @@ fn parse_command_line(
         def_sbid
     };
 
-    let nblank = if let Some(val) = matches.get_one::<sudoku_sys::URND32>("nblank") {
+    let nblank = if let Some(val) = matches.get_one::<u32>("nblank") {
         *val
     } else if matches.contains_id("nblank") {
         panic!("Parsing nblank!!");
@@ -122,7 +139,7 @@ fn parse_command_line(
         def_nblank
     };
 
-    let sd = if let Some(val) = matches.get_one::<sudoku_sys::URND32>("sd") {
+    let sd = if let Some(val) = matches.get_one::<u32>("sd") {
         *val
     } else if matches.contains_id("sd") {
         panic!("Parsing sd!!");
@@ -130,7 +147,7 @@ fn parse_command_line(
         def_sd
     };
 
-    let nboard = if let Some(val) = matches.get_one::<sudoku_sys::URND32>("nboard") {
+    let nboard = if let Some(val) = matches.get_one::<u32>("nboard") {
         *val
     } else if matches.contains_id("nboard") {
         panic!("Parsing nboard!!");
@@ -138,13 +155,21 @@ fn parse_command_line(
         def_nboard
     };
 
-    (nbseed, sbid, nblank, sd, nboard)
+    let file: Option<PathBuf> = if let Some(val) = matches.get_one::<PathBuf>("file") {
+        Some(val.clone())
+    } else if matches.contains_id("file") {
+        panic!("Parsing file!!");
+    } else {
+        None
+    };
+
+    (nbseed, sbid, nblank, sd, nboard, file)
 }
 
 fn main() -> std::io::Result<()> {
     let entropy_number = sudoku_rs::seed_from_entropy();
 
-    let (nbseed, sbid, nblank, sd, nboard) = parse_command_line(
+    let (nbseed, sbid, nblank, sd, nboard, filename) = parse_command_line(
         entropy_number,
         entropy_number,
         def::NBLANK,
@@ -153,14 +178,19 @@ fn main() -> std::io::Result<()> {
     );
 
     let mut game = sudoku_sys::sgs_game::new(0, nblank);
-    print_board_tex(
-        std::io::stdout().lock(),
-        &mut game,
-        nbseed,
-        sbid,
-        sd,
-        nboard,
-    )?;
+
+    if let Some(pathbuf) = filename {
+        let file = OpenOptions::new()
+            .write(true)
+            .create(true)
+            .truncate(true)
+            .open(pathbuf)
+            .unwrap();
+        print_board_tex(file, &mut game, nbseed, sbid, nblank, sd, nboard)?;
+    } else {
+        let file = std::io::stdout().lock();
+        print_board_tex(file, &mut game, nbseed, sbid, nblank, sd, nboard)?;
+    }
 
     Ok(())
 }
