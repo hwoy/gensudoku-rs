@@ -19,6 +19,15 @@ fn print_board_tex(
         game.setbid(sbid + n);
         game.createsudoku_rnd(sd);
 
+        writer.write_fmt(format_args!(
+            r##"\noindent \verb|N_BLANKSEED = {}, SBID = {}| \verb|N = {}, SN_BLANK = {}, SD = {}| \newline "##,
+            nbseed + n,
+            sbid + n,
+            n,
+            game.numblank,
+			sd
+        ))?;
+
         writer.write_fmt(format_args!("{}\n", def::HEAD_SUDOKU_TEX))?;
 
         for y in 0..sudoku_sys::S_SQR {
