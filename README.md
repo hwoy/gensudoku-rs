@@ -11,6 +11,8 @@ cd gensudoku-rs
 cargo build
 
 ```
+## Example
+
 ```tex
 
 \documentclass[a4paper]{article}
