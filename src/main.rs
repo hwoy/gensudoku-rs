@@ -15,16 +15,11 @@ fn print_a_board_tex(
     seed: sudoku_sys::URND32,
     bid: sudoku_sys::sgt_bid,
     n: u32,
-    sd: u32,
 ) -> std::io::Result<()> {
     writable_object.write_fmt(format_args!(
-            r##"\noindent \verb|N_BLANKSEED = {}, SBID = {}, N = {}, SN_BLANK = {}, SD = {}| \newline "##,
-            seed,
-            bid ,
-            n,
-            sudoku.numblank,
-			sd
-        ))?;
+        r##"\noindent \verb|SEED = {}, BID = {}, N = {}, NUMBLANK = {}| \newline "##,
+        seed, bid, n, sudoku.numblank
+    ))?;
 
     writable_object.write_fmt(format_args!("{}\n", def::HEAD_SUDOKU_TEX))?;
 
@@ -75,7 +70,7 @@ fn print_boards_tex(
     });
 
     for (sudoku, seed, bid, n) in sudoku_iter {
-        print_a_board_tex(&mut writable_object, &sudoku, seed, bid, n, sd)?;
+        print_a_board_tex(&mut writable_object, &sudoku, seed, bid, n)?;
 
         if n + 1 < nboard {
             writable_object.write_fmt(format_args!("\\newpage\n\n"))?;
