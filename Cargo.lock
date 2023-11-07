@@ -360,7 +360,7 @@ checksum = "73473c0e59e6d5812c5dfe2a064a6444949f089e20eec9a2e5506596494e4623"
 [[package]]
 name = "sudoku-rs"
 version = "0.1.0"
-source = "git+https://github.com/hwoy/sudoku-rs.git#450d43ae4fd17567a3fd4dd375c8724ca4738cc6"
+source = "git+https://github.com/hwoy/sudoku-rs.git#44adc909137f04e0588c4596b320b0446ee23c89"
 dependencies = [
  "sudoku-sys",
 ]
@@ -368,7 +368,7 @@ dependencies = [
 [[package]]
 name = "sudoku-sys"
 version = "0.1.0"
-source = "git+https://github.com/hwoy/sudoku-sys.git#1c2306ffaf41ec2f60ff3a04e1d5936b19f5f9fa"
+source = "git+https://github.com/hwoy/sudoku-sys.git#80dc870cf2c3f8191f49baea9e5c24312cacee04"
 dependencies = [
  "bindgen",
  "cc",
