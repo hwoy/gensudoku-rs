@@ -11,13 +11,14 @@ use std::path::PathBuf;
 
 fn print_board_tex(
     mut writer: impl Write,
-    game: &mut sudoku_sys::sgs_game,
     nbseed: sudoku_sys::URND32,
     sbid: sudoku_sys::URND32,
     nblank: u32,
     sd: u32,
     nboard: u32,
 ) -> std::io::Result<()> {
+    let mut game = sudoku_sys::sgs_game::new(0, nblank);
+
     writer.write_fmt(format_args!("{}\n", def::HEAD_TEX))?;
 
     for n in 0..nboard {
@@ -177,8 +178,6 @@ fn main() -> std::io::Result<()> {
         def::NBOARD,
     );
 
-    let mut game = sudoku_sys::sgs_game::new(0, nblank);
-
     if let Some(pathbuf) = filename {
         let file = OpenOptions::new()
             .write(true)
@@ -186,10 +185,10 @@ fn main() -> std::io::Result<()> {
             .truncate(true)
             .open(pathbuf)
             .unwrap();
-        print_board_tex(file, &mut game, nbseed, sbid, nblank, sd, nboard)?;
+        print_board_tex(file, nbseed, sbid, nblank, sd, nboard)?;
     } else {
         let file = std::io::stdout().lock();
-        print_board_tex(file, &mut game, nbseed, sbid, nblank, sd, nboard)?;
+        print_board_tex(file, nbseed, sbid, nblank, sd, nboard)?;
     }
 
     Ok(())
