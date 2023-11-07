@@ -10,14 +10,14 @@ use std::io::Write;
 use std::path::PathBuf;
 
 fn print_board_tex(
-    mut writer: impl Write,
+    mut writable_object: impl Write,
     nbseed: sudoku_sys::URND32,
     sbid: sudoku_sys::URND32,
     nblank: u32,
     sd: u32,
     nboard: u32,
 ) -> std::io::Result<()> {
-    writer.write_fmt(format_args!("{}\n", def::HEAD_TEX))?;
+    writable_object.write_fmt(format_args!("{}\n", def::HEAD_TEX))?;
 
     for n in 0..nboard {
         let board = sudoku_rs::Builder::new()
@@ -27,7 +27,7 @@ fn print_board_tex(
             .build()
             .to_sudoku_rnd(sd);
 
-        writer.write_fmt(format_args!(
+        writable_object.write_fmt(format_args!(
             r##"\noindent \verb|N_BLANKSEED = {}, SBID = {}, N = {}, SN_BLANK = {}, SD = {}| \newline "##,
             nbseed + n,
             sbid + n,
@@ -36,13 +36,13 @@ fn print_board_tex(
 			sd
         ))?;
 
-        writer.write_fmt(format_args!("{}\n", def::HEAD_SUDOKU_TEX))?;
+        writable_object.write_fmt(format_args!("{}\n", def::HEAD_SUDOKU_TEX))?;
 
         for y in 0..sudoku_sys::S_SQR {
             for x in 0..sudoku_sys::S_SQR {
                 let val = board.getvalue(x, y);
 
-                writer.write_fmt(format_args!(
+                writable_object.write_fmt(format_args!(
                     "|{}",
                     if val != 0 {
                         val.to_string()
@@ -52,17 +52,17 @@ fn print_board_tex(
                 ))?;
             }
 
-            writer.write_fmt(format_args!("|.\n"))?;
+            writable_object.write_fmt(format_args!("|.\n"))?;
         }
 
-        writer.write_fmt(format_args!("{}\n", def::TAIL_SUDOKU_TEX))?;
+        writable_object.write_fmt(format_args!("{}\n", def::TAIL_SUDOKU_TEX))?;
 
         if n + 1 < nboard {
-            writer.write_fmt(format_args!("\\newpage\n\n"))?;
+            writable_object.write_fmt(format_args!("\\newpage\n\n"))?;
         }
     }
 
-    writer.write_fmt(format_args!("{}\n", def::TAIL_TEX))?;
+    writable_object.write_fmt(format_args!("{}\n", def::TAIL_TEX))?;
 
     Ok(())
 }
@@ -178,16 +178,16 @@ fn main() -> std::io::Result<()> {
     );
 
     if let Some(pathbuf) = filename {
-        let writer = OpenOptions::new()
+        let writable_object = OpenOptions::new()
             .write(true)
             .create(true)
             .truncate(true)
             .open(pathbuf)
             .unwrap();
-        print_board_tex(writer, nbseed, sbid, nblank, sd, nboard)?;
+        print_board_tex(writable_object, nbseed, sbid, nblank, sd, nboard)?;
     } else {
-        let writer = std::io::stdout().lock();
-        print_board_tex(writer, nbseed, sbid, nblank, sd, nboard)?;
+        let writable_object = std::io::stdout().lock();
+        print_board_tex(writable_object, nbseed, sbid, nblank, sd, nboard)?;
     }
 
     Ok(())
