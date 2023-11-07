@@ -17,22 +17,22 @@ fn print_board_tex(
     sd: u32,
     nboard: u32,
 ) -> std::io::Result<()> {
-    let mut game = sudoku_sys::sgs_game::new();
-
     writer.write_fmt(format_args!("{}\n", def::HEAD_TEX))?;
 
     for n in 0..nboard {
-        game.seed(nbseed + n)
+        let board = sudoku_rs::Builder::new()
+            .seed(nbseed + n)
             .setbid(sbid + n)
             .setnblank(nblank)
-            .createsudoku_rnd(sd);
+            .build()
+            .to_sudoku_rnd(sd);
 
         writer.write_fmt(format_args!(
             r##"\noindent \verb|N_BLANKSEED = {}, SBID = {}, N = {}, SN_BLANK = {}, SD = {}| \newline "##,
             nbseed + n,
             sbid + n,
             n,
-            game.numblank,
+            board.numblank,
 			sd
         ))?;
 
@@ -40,7 +40,7 @@ fn print_board_tex(
 
         for y in 0..sudoku_sys::S_SQR {
             for x in 0..sudoku_sys::S_SQR {
-                let val = game.getvalue(x, y);
+                let val = board.getvalue(x, y);
 
                 writer.write_fmt(format_args!(
                     "|{}",
