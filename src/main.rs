@@ -20,7 +20,7 @@ fn print_board_tex(
     writable_object.write_fmt(format_args!("{}\n", def::HEAD_TEX))?;
 
     for n in 0..nboard {
-        let board = sudoku_rs::Builder::new()
+        let sudoku = sudoku_rs::Builder::new()
             .seed(nbseed + n)
             .setbid(sbid + n)
             .setnblank(nblank)
@@ -32,7 +32,7 @@ fn print_board_tex(
             nbseed + n,
             sbid + n,
             n,
-            board.numblank,
+            sudoku.numblank,
 			sd
         ))?;
 
@@ -40,7 +40,7 @@ fn print_board_tex(
 
         for y in 0..sudoku_sys::S_SQR {
             for x in 0..sudoku_sys::S_SQR {
-                let val = board.getvalue(x, y);
+                let val = sudoku.getvalue(x, y);
 
                 writable_object.write_fmt(format_args!(
                     "|{}",
