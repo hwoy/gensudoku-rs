@@ -164,9 +164,9 @@ checksum = "a26ae43d7bcc3b814de94796a5e736d4029efb0ee900c12e2d54c993ad1a1e07"
 
 [[package]]
 name = "errno"
-version = "0.3.5"
+version = "0.3.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ac3e13f66a2f95e32a39eaa81f6b95d42878ca0e1db0c7543723dfe12557e860"
+checksum = "7c18ee0ed65a5f1f81cac6b1d213b69c35fa47d4252ad41f1486dbd8226fe36e"
 dependencies = [
  "libc",
  "windows-sys",
@@ -360,7 +360,7 @@ checksum = "73473c0e59e6d5812c5dfe2a064a6444949f089e20eec9a2e5506596494e4623"
 [[package]]
 name = "sudoku-rs"
 version = "0.1.0"
-source = "git+https://github.com/hwoy/sudoku-rs.git#dc8f4d04a0738ea3d780c5518a81e0639da4b9f7"
+source = "git+https://github.com/hwoy/sudoku-rs.git#450d43ae4fd17567a3fd4dd375c8724ca4738cc6"
 dependencies = [
  "sudoku-sys",
 ]

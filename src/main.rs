@@ -23,14 +23,12 @@ fn print_a_board_tex(
 
     writable_object.write_fmt(format_args!("{}\n", def::HEAD_SUDOKU_TEX))?;
 
-    for y in 0..sudoku_sys::S_SQR {
-        for x in 0..sudoku_sys::S_SQR {
-            let val = sudoku.getvalue(x, y);
-
+    for e in sudoku.board_unit().iter() {
+        for unit in e.iter() {
             writable_object.write_fmt(format_args!(
                 "|{}",
-                if val != 0 {
-                    val.to_string()
+                if unit.value != 0 {
+                    unit.value.to_string()
                 } else {
                     " ".to_string()
                 }
@@ -90,7 +88,7 @@ fn parse_command_line(
     def_nboard: u32,
 ) -> (
     sudoku_sys::URND32,
-    sudoku_sys::URND32,
+    sudoku_sys::sgt_bid,
     u32,
     u32,
     u32,
@@ -105,7 +103,7 @@ fn parse_command_line(
         )
         .arg(
             arg!(--sbid <SBID> "A board ID")
-                .value_parser(value_parser!(sudoku_sys::URND32))
+                .value_parser(value_parser!(sudoku_sys::sgt_bid))
                 .action(ArgAction::Set),
         )
         .arg(
@@ -138,7 +136,7 @@ fn parse_command_line(
         def_nbseed
     };
 
-    let sbid = if let Some(val) = matches.get_one::<sudoku_sys::URND32>("sbid") {
+    let sbid = if let Some(val) = matches.get_one::<sudoku_sys::sgt_bid>("sbid") {
         *val
     } else if matches.contains_id("sbid") {
         panic!("Parsing sbid!!");
