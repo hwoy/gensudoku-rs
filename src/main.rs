@@ -9,53 +9,73 @@ use std::fs::OpenOptions;
 use std::io::Write;
 use std::path::PathBuf;
 
-fn print_board_tex(
+fn print_a_board_tex(
+    writable_object: &mut impl Write,
+    sudoku: &sudoku_sys::sgs_game,
+    seed: sudoku_sys::URND32,
+    bid: sudoku_sys::sgt_bid,
+    n: u32,
+    sd: u32,
+) -> std::io::Result<()> {
+    writable_object.write_fmt(format_args!(
+            r##"\noindent \verb|N_BLANKSEED = {}, SBID = {}, N = {}, SN_BLANK = {}, SD = {}| \newline "##,
+            seed,
+            bid ,
+            n,
+            sudoku.numblank,
+			sd
+        ))?;
+
+    writable_object.write_fmt(format_args!("{}\n", def::HEAD_SUDOKU_TEX))?;
+
+    for y in 0..sudoku_sys::S_SQR {
+        for x in 0..sudoku_sys::S_SQR {
+            let val = sudoku.getvalue(x, y);
+
+            writable_object.write_fmt(format_args!(
+                "|{}",
+                if val != 0 {
+                    val.to_string()
+                } else {
+                    " ".to_string()
+                }
+            ))?;
+        }
+
+        writable_object.write_fmt(format_args!("|.\n"))?;
+    }
+
+    writable_object.write_fmt(format_args!("{}\n", def::TAIL_SUDOKU_TEX))?;
+
+    Ok(())
+}
+
+fn print_boards_tex(
     mut writable_object: impl Write,
     nbseed: sudoku_sys::URND32,
-    sbid: sudoku_sys::URND32,
+    sbid: sudoku_sys::sgt_bid,
     nblank: u32,
     sd: u32,
     nboard: u32,
 ) -> std::io::Result<()> {
     writable_object.write_fmt(format_args!("{}\n", def::HEAD_TEX))?;
 
-    for n in 0..nboard {
-        let sudoku = sudoku_rs::Builder::new()
-            .seed(nbseed + n)
-            .setbid(sbid + n)
-            .setnblank(nblank)
-            .build()
-            .to_sudoku_rnd(sd);
-
-        writable_object.write_fmt(format_args!(
-            r##"\noindent \verb|N_BLANKSEED = {}, SBID = {}, N = {}, SN_BLANK = {}, SD = {}| \newline "##,
+    let sudoku_iter = (0..nboard).map(|n| {
+        (
+            sudoku_rs::Builder::new()
+                .seed(nbseed + n)
+                .setbid(sbid + n)
+                .setnblank(nblank)
+                .build()
+                .to_sudoku_rnd(sd),
             nbseed + n,
             sbid + n,
             n,
-            sudoku.numblank,
-			sd
-        ))?;
+        )
+    });
 
-        writable_object.write_fmt(format_args!("{}\n", def::HEAD_SUDOKU_TEX))?;
-
-        for y in 0..sudoku_sys::S_SQR {
-            for x in 0..sudoku_sys::S_SQR {
-                let val = sudoku.getvalue(x, y);
-
-                writable_object.write_fmt(format_args!(
-                    "|{}",
-                    if val != 0 {
-                        val.to_string()
-                    } else {
-                        " ".to_string()
-                    }
-                ))?;
-            }
-
-            writable_object.write_fmt(format_args!("|.\n"))?;
-        }
-
-        writable_object.write_fmt(format_args!("{}\n", def::TAIL_SUDOKU_TEX))?;
+    for (sudoku, seed, bid, n) in sudoku_iter {
+        print_a_board_tex(&mut writable_object, &sudoku, seed, bid, n, sd)?;
 
         if n + 1 < nboard {
             writable_object.write_fmt(format_args!("\\newpage\n\n"))?;
@@ -69,7 +89,7 @@ fn print_board_tex(
 
 fn parse_command_line(
     def_nbseed: sudoku_sys::URND32,
-    def_sbid: sudoku_sys::URND32,
+    def_sbid: sudoku_sys::sgt_bid,
     def_nblank: u32,
     def_sd: u32,
     def_nboard: u32,
@@ -184,10 +204,10 @@ fn main() -> std::io::Result<()> {
             .truncate(true)
             .open(pathbuf)
             .unwrap();
-        print_board_tex(writable_object, nbseed, sbid, nblank, sd, nboard)?;
+        print_boards_tex(writable_object, nbseed, sbid, nblank, sd, nboard)?;
     } else {
         let writable_object = std::io::stdout().lock();
-        print_board_tex(writable_object, nbseed, sbid, nblank, sd, nboard)?;
+        print_boards_tex(writable_object, nbseed, sbid, nblank, sd, nboard)?;
     }
 
     Ok(())
