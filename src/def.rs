@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-
 pub const NBLANK: u32 = 40;
 pub const SD: u32 = 5;
 pub const NBOARD: u32 = 1;
