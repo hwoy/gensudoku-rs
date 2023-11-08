@@ -24,11 +24,11 @@ fn print_a_board_tex(
     writable_object.write_fmt(format_args!("{}\n", def::HEAD_SUDOKU_TEX))?;
 
     for e in sudoku.board_unit().iter() {
-        for unit in e.iter() {
+        for value in e.iter().map(|unit| unit.value) {
             writable_object.write_fmt(format_args!(
                 "|{}",
-                if unit.value != 0 {
-                    unit.value.to_string()
+                if value != 0 {
+                    value.to_string()
                 } else {
                     " ".to_string()
                 }
