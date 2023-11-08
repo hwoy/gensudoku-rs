@@ -1,5 +1,6 @@
-pub const NBLANK: u32 = 45;
-pub const SD: u32 = 5;
+pub const S_SQR: u32 = sudoku_rs::sudoku_sys::S_SQR;
+pub const NBLANK: u32 = (S_SQR * S_SQR * 60) / 100;
+pub const SD: u32 = (S_SQR * S_SQR * 5) / 100;
 pub const NBOARD: u32 = 1;
 
 pub const HEAD_TEX: &'static str = r##"\documentclass[a4paper]{article}
