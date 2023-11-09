@@ -110,14 +110,14 @@ pub fn build_sukoku_iter(
 }
 
 pub trait PrintTex {
-    fn print_tex(self, writable_object: impl Write) -> std::io::Result<()>;
+    fn write_tex(self, writable_object: impl Write) -> std::io::Result<()>;
 }
 
 impl<I> PrintTex for SudokuIter<I>
 where
     I: Iterator<Item = SudokuIteratorItem>,
 {
-    fn print_tex(self, writable_object: impl Write) -> std::io::Result<()> {
+    fn write_tex(self, writable_object: impl Write) -> std::io::Result<()> {
         let mut writable_object = writable_object;
         writable_object.write_fmt(format_args!("{}\n", HEAD_TEX))?;
 

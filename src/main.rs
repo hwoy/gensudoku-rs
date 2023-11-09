@@ -9,7 +9,7 @@ use std::fs::OpenOptions;
 use std::io::Write;
 use std::path::PathBuf;
 
-fn print_tex(
+fn write_tex(
     writable_object: impl Write,
     nbseed: sudoku_sys::URND32,
     sbid: sudoku_sys::sgt_bid,
@@ -18,7 +18,7 @@ fn print_tex(
     nboard: u32,
 ) -> std::io::Result<()> {
     let sudoku_iter = def::build_sukoku_iter(nbseed, sbid, nblank, sd, nboard);
-    sudoku_iter.print_tex(writable_object)
+    sudoku_iter.write_tex(writable_object)
 }
 
 fn parse_command_line(
@@ -138,9 +138,9 @@ fn main() -> std::io::Result<()> {
             .truncate(true)
             .open(pathbuf)
             .unwrap();
-        print_tex(writable_object, nbseed, sbid, nblank, sd, nboard)
+        write_tex(writable_object, nbseed, sbid, nblank, sd, nboard)
     } else {
         let writable_object = std::io::stdout().lock();
-        print_tex(writable_object, nbseed, sbid, nblank, sd, nboard)
+        write_tex(writable_object, nbseed, sbid, nblank, sd, nboard)
     }
 }
