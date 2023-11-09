@@ -1,83 +1,24 @@
 extern crate sudoku_rs;
 use sudoku_rs::prelude::*;
 mod def;
+use def::PrintTex;
 
 extern crate clap;
 use clap::{arg, value_parser, ArgAction};
-
 use std::fs::OpenOptions;
 use std::io::Write;
 use std::path::PathBuf;
 
-fn print_a_board_tex(
-    writable_object: &mut impl Write,
-    sudoku: &sudoku_sys::sgs_game,
-    seed: sudoku_sys::URND32,
-    bid: sudoku_sys::sgt_bid,
-    n: u32,
-) -> std::io::Result<()> {
-    writable_object.write_fmt(format_args!(
-        r##"\noindent \verb|SEED = {}, BID = {}, N = {}, NUMBLANK = {}| \newline "##,
-        seed, bid, n, sudoku.numblank
-    ))?;
-
-    writable_object.write_fmt(format_args!("{}\n", def::HEAD_SUDOKU_TEX))?;
-
-    for e in sudoku.board_unit().iter() {
-        for value in e.iter().map(|unit| unit.value) {
-            writable_object.write_fmt(format_args!(
-                "|{}",
-                if value != 0 {
-                    value.to_string()
-                } else {
-                    " ".to_string()
-                }
-            ))?;
-        }
-
-        writable_object.write_fmt(format_args!("|.\n"))?;
-    }
-
-    writable_object.write_fmt(format_args!("{}\n", def::TAIL_SUDOKU_TEX))?;
-
-    Ok(())
-}
-
-fn print_boards_tex(
-    mut writable_object: impl Write,
+fn print_tex(
+    writable_object: impl Write,
     nbseed: sudoku_sys::URND32,
     sbid: sudoku_sys::sgt_bid,
     nblank: u32,
     sd: u32,
     nboard: u32,
 ) -> std::io::Result<()> {
-    writable_object.write_fmt(format_args!("{}\n", def::HEAD_TEX))?;
-
-    let sudoku_iter = (0..nboard).map(|n| {
-        (
-            sudoku_rs::Builder::new()
-                .seed(nbseed + n)
-                .setbid(sbid + n)
-                .setnblank(nblank)
-                .build()
-                .to_sudoku_rnd(sd),
-            nbseed + n,
-            sbid + n,
-            n,
-        )
-    });
-
-    for (sudoku, seed, bid, n) in sudoku_iter {
-        print_a_board_tex(&mut writable_object, &sudoku, seed, bid, n)?;
-
-        if n + 1 < nboard {
-            writable_object.write_fmt(format_args!("\\newpage\n\n"))?;
-        }
-    }
-
-    writable_object.write_fmt(format_args!("{}\n", def::TAIL_TEX))?;
-
-    Ok(())
+    let sudoku_iter = def::build_sudoku_iter(nbseed, sbid, nblank, sd, nboard);
+    sudoku_iter.print_tex(writable_object, nboard)
 }
 
 fn parse_command_line(
@@ -197,11 +138,9 @@ fn main() -> std::io::Result<()> {
             .truncate(true)
             .open(pathbuf)
             .unwrap();
-        print_boards_tex(writable_object, nbseed, sbid, nblank, sd, nboard)?;
+        print_tex(writable_object, nbseed, sbid, nblank, sd, nboard)
     } else {
         let writable_object = std::io::stdout().lock();
-        print_boards_tex(writable_object, nbseed, sbid, nblank, sd, nboard)?;
+        print_tex(writable_object, nbseed, sbid, nblank, sd, nboard)
     }
-
-    Ok(())
 }
