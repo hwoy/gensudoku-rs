@@ -68,14 +68,15 @@ type SudokuIteratorItem = (
 
 pub struct SudokuTex<I>(I,u32);
 
-pub fn build_sudoku_iter(
+pub fn build_sudoku_iter<I:Iterator<Item = SudokuIteratorItem>>(
     nbseed: sudoku_sys::URND32,
     sbid: sudoku_sys::sgt_bid,
     nblank: u32,
     sd: u32,
     nboard: u32,
-) -> impl Iterator<Item = SudokuIteratorItem> {
-    (0..nboard).map(move |n| {
+) -> Sudoku<I>(I,u32) {
+	
+    let iter = (0..nboard).map(move |n| {
         (
             sudoku_rs::Builder::new()
                 .seed(nbseed + n)
@@ -87,7 +88,8 @@ pub fn build_sudoku_iter(
             sbid + n,
             n,
         )
-    })
+    });
+	SudokuTex(iter,nboard)
 }
 
 pub trait PrintTex {
