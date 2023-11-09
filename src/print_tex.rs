@@ -63,7 +63,7 @@ type SudokuIteratorItem = (
 
 pub struct SudokuIter<I>
 where
-    I: Iterator<Item = SudokuIteratorItem>,
+    I: Iterator,
 {
     sudoku_iter: I,
     nboard: u32,
@@ -71,7 +71,7 @@ where
 
 impl<I> SudokuIter<I>
 where
-    I: Iterator<Item = SudokuIteratorItem>,
+    I: Iterator,
 {
     pub fn from(sudoku_iter: I, nboard: u32) -> Self {
         Self {
