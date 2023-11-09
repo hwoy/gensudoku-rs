@@ -66,13 +66,33 @@ type SudokuIteratorItem = (
     u32,
 );
 
-pub fn build_sudoku_iter(
+pub struct SudokuIter<I>
+where
+    I: Iterator<Item = SudokuIteratorItem>,
+{
+    sudoku_iter: I,
+    nboard: u32,
+}
+
+impl<I> SudokuIter<I>
+where
+    I: Iterator<Item = SudokuIteratorItem>,
+{
+    pub fn from(sudoku_iter: I, nboard: u32) -> Self {
+        Self {
+            sudoku_iter: sudoku_iter,
+            nboard: nboard,
+        }
+    }
+}
+
+pub fn build_sukoku_iter(
     nbseed: sudoku_sys::URND32,
     sbid: sudoku_sys::sgt_bid,
     nblank: u32,
     sd: u32,
     nboard: u32,
-) -> (impl Iterator<Item = SudokuIteratorItem>, u32) {
+) -> SudokuIter<impl Iterator<Item = SudokuIteratorItem>> {
     let sudoku_iter = (0..nboard).map(move |n| {
         (
             sudoku_rs::Builder::new()
@@ -86,14 +106,14 @@ pub fn build_sudoku_iter(
             n,
         )
     });
-    (sudoku_iter, nboard)
+    SudokuIter::from(sudoku_iter, nboard)
 }
 
 pub trait PrintTex {
     fn print_tex(self, writable_object: impl Write) -> std::io::Result<()>;
 }
 
-impl<I> PrintTex for (I, u32)
+impl<I> PrintTex for SudokuIter<I>
 where
     I: Iterator<Item = SudokuIteratorItem>,
 {
@@ -101,7 +121,10 @@ where
         let mut writable_object = writable_object;
         writable_object.write_fmt(format_args!("{}\n", HEAD_TEX))?;
 
-        let (sudoku_iter, nboard) = self;
+        let Self {
+            sudoku_iter,
+            nboard,
+        } = self;
 
         for (sudoku, seed, bid, n) in sudoku_iter {
             print_sudoku_tex(&mut writable_object, &sudoku, seed, bid, n)?;

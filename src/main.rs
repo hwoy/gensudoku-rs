@@ -17,7 +17,7 @@ fn print_tex(
     sd: u32,
     nboard: u32,
 ) -> std::io::Result<()> {
-    let sudoku_iter = def::build_sudoku_iter(nbseed, sbid, nblank, sd, nboard);
+    let sudoku_iter = def::build_sukoku_iter(nbseed, sbid, nblank, sd, nboard);
     sudoku_iter.print_tex(writable_object)
 }
 
