@@ -1,7 +1,10 @@
 extern crate sudoku_rs;
 use sudoku_rs::prelude::*;
+
 mod def;
-use def::PrintTex;
+
+mod print_tex;
+use print_tex::PrintTex;
 
 extern crate clap;
 use clap::{arg, value_parser, ArgAction};
@@ -17,7 +20,7 @@ fn write_tex(
     sd: u32,
     nboard: u32,
 ) -> std::io::Result<()> {
-    let sudoku_iter = def::build_sukoku_iter(nbseed, sbid, nblank, sd, nboard);
+    let sudoku_iter = print_tex::build_sukoku_iter(nbseed, sbid, nblank, sd, nboard);
     sudoku_iter.write_tex(writer)
 }
 
