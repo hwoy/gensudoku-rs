@@ -26,22 +26,22 @@ use sudoku_rs::prelude::*;
 use std::io::Write;
 
 fn print_sudoku_tex(
-    writable_object: &mut impl Write,
+    writer: &mut impl Write,
     sudoku: &sudoku_sys::sgs_game,
     seed: sudoku_sys::URND32,
     bid: sudoku_sys::sgt_bid,
     n: u32,
 ) -> std::io::Result<()> {
-    writable_object.write_fmt(format_args!(
+    writer.write_fmt(format_args!(
         r##"\noindent \verb|SEED = {}, BID = {}, N = {}, NUMBLANK = {}| \newline"##,
         seed, bid, n, sudoku.numblank
     ))?;
 
-    writable_object.write_fmt(format_args!("\n{}\n", HEAD_SUDOKU_TEX))?;
+    writer.write_fmt(format_args!("\n{}\n", HEAD_SUDOKU_TEX))?;
 
     for e in sudoku.board_unit().iter() {
         for value in e.iter().map(|unit| unit.value) {
-            writable_object.write_fmt(format_args!(
+            writer.write_fmt(format_args!(
                 "|{}",
                 if value != 0 {
                     value.to_string()
@@ -51,10 +51,10 @@ fn print_sudoku_tex(
             ))?;
         }
 
-        writable_object.write_fmt(format_args!("|.\n"))?;
+        writer.write_fmt(format_args!("|.\n"))?;
     }
 
-    writable_object.write_fmt(format_args!("{}\n", TAIL_SUDOKU_TEX))
+    writer.write_fmt(format_args!("{}\n", TAIL_SUDOKU_TEX))
 }
 
 use std::iter::Iterator;
@@ -110,16 +110,16 @@ pub fn build_sukoku_iter(
 }
 
 pub trait PrintTex {
-    fn write_tex(self, writable_object: impl Write) -> std::io::Result<()>;
+    fn write_tex(self, writer: impl Write) -> std::io::Result<()>;
 }
 
 impl<I> PrintTex for SudokuIter<I>
 where
     I: Iterator<Item = SudokuIteratorItem>,
 {
-    fn write_tex(self, writable_object: impl Write) -> std::io::Result<()> {
-        let mut writable_object = writable_object;
-        writable_object.write_fmt(format_args!("{}\n", HEAD_TEX))?;
+    fn write_tex(self, writer: impl Write) -> std::io::Result<()> {
+        let mut writer = writer;
+        writer.write_fmt(format_args!("{}\n", HEAD_TEX))?;
 
         let Self {
             sudoku_iter,
@@ -127,13 +127,13 @@ where
         } = self;
 
         for (sudoku, seed, bid, n) in sudoku_iter {
-            print_sudoku_tex(&mut writable_object, &sudoku, seed, bid, n)?;
+            print_sudoku_tex(&mut writer, &sudoku, seed, bid, n)?;
 
             if n + 1 < nboard {
-                writable_object.write_fmt(format_args!("\\newpage\n\n"))?;
+                writer.write_fmt(format_args!("\\newpage\n\n"))?;
             }
         }
 
-        writable_object.write_fmt(format_args!("{}\n", TAIL_TEX))
+        writer.write_fmt(format_args!("{}\n", TAIL_TEX))
     }
 }
