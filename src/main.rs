@@ -18,7 +18,7 @@ fn print_tex(
     nboard: u32,
 ) -> std::io::Result<()> {
     let sudoku_iter = def::build_sudoku_iter(nbseed, sbid, nblank, sd, nboard);
-    sudoku_iter.print_tex(writable_object, nboard)
+    sudoku_iter.print_tex(writable_object)
 }
 
 fn parse_command_line(
