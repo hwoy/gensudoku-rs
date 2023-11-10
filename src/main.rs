@@ -135,7 +135,7 @@ fn main() -> std::io::Result<()> {
         def::NBOARD,
     );
 
-    let mut box_writer: Box<dyn Write> = if let Some(pathbuf) = filename {
+    let mut writer: Box<dyn Write> = if let Some(pathbuf) = filename {
         let writer = OpenOptions::new()
             .write(true)
             .create(true)
@@ -147,5 +147,5 @@ fn main() -> std::io::Result<()> {
         let writer = std::io::stdout().lock();
         Box::new(writer)
     };
-    write_tex(&mut box_writer, nbseed, sbid, nblank, sd, nboard)
+    write_tex(&mut writer, nbseed, sbid, nblank, sd, nboard)
 }
