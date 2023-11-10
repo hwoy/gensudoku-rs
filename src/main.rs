@@ -7,8 +7,8 @@ mod print_tex;
 use print_tex::PrintTex;
 
 extern crate clap;
-
 use clap::{arg, value_parser, ArgAction};
+
 use std::fs::OpenOptions;
 use std::io::Write;
 use std::path::PathBuf;
