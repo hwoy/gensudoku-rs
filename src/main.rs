@@ -13,18 +13,6 @@ use std::fs::OpenOptions;
 use std::io::Write;
 use std::path::PathBuf;
 
-fn write_tex(
-    writer: impl Write,
-    nbseed: sudoku_sys::URND32,
-    sbid: sudoku_sys::sgt_bid,
-    nblank: u32,
-    sd: u32,
-    nboard: u32,
-) -> std::io::Result<()> {
-    let sudoku_iter = print_tex::build_sukoku_iter(nbseed, sbid, nblank, sd, nboard);
-    sudoku_iter.write_tex(writer)
-}
-
 fn parse_command_line(
     def_nbseed: sudoku_sys::URND32,
     def_sbid: sudoku_sys::sgt_bid,
@@ -135,7 +123,7 @@ fn main() -> std::io::Result<()> {
         def::NBOARD,
     );
 
-    let mut writer: Box<dyn Write> = if let Some(pathbuf) = filename {
+    let writer: Box<dyn Write> = if let Some(pathbuf) = filename {
         let writer = OpenOptions::new()
             .write(true)
             .create(true)
@@ -147,5 +135,6 @@ fn main() -> std::io::Result<()> {
         let writer = std::io::stdout().lock();
         Box::new(writer)
     };
-    write_tex(&mut writer, nbseed, sbid, nblank, sd, nboard)
+
+    print_tex::build_sukoku_iter(nbseed, sbid, nblank, sd, nboard).write_tex(writer)
 }
