@@ -8,3 +8,7 @@ edition = "2021"
 [dependencies]
 clap = "4.4.7"
 sudoku-rs = { git = "https://github.com/hwoy/sudoku-rs.git" }
+
+[features]
+emsdk=["open64"]
+open64=[]
