@@ -368,7 +368,7 @@ dependencies = [
 [[package]]
 name = "sudoku-sys"
 version = "0.1.0"
-source = "git+https://github.com/hwoy/sudoku-sys.git#a95c99fe0b85310abcb1dbc261c2d55ecdd95cd9"
+source = "git+https://github.com/hwoy/sudoku-sys.git#c88d8b2d4857cf7705680308c5248fdfe1a548cb"
 dependencies = [
  "bindgen",
  "cc",
