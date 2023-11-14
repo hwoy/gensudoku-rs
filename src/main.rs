@@ -6,7 +6,7 @@ mod def;
 mod print_tex;
 use print_tex::PrintTex;
 
-mod open64_emsdk_wasm;
+mod emsdk_wasm;
 
 extern crate clap;
 use clap::{arg, value_parser, ArgAction};
