@@ -6,23 +6,15 @@ mod def;
 mod print_tex;
 use print_tex::PrintTex;
 
+#[cfg(feature = "emsdk_wasm")]
+mod open64_emsdk_wasm;
+
 extern crate clap;
 use clap::{arg, value_parser, ArgAction};
 
 use std::fs::OpenOptions;
 use std::io::Write;
 use std::path::PathBuf;
-
-#[cfg(feature = "open64")]
-extern "C" {
-    fn open(_: *const (), _: i32, _: i32) -> i32;
-}
-
-#[cfg(feature = "open64")]
-#[no_mangle]
-pub extern "C" fn open64(a: *const (), b: i32, c: i32) -> i32 {
-    unsafe { open(a, b, c) }
-}
 
 fn parse_command_line(
     def_nbseed: sudoku_sys::URND32,
