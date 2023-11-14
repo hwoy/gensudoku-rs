@@ -6,7 +6,6 @@ mod def;
 mod print_tex;
 use print_tex::PrintTex;
 
-#[cfg(feature = "emsdk_wasm")]
 mod open64_emsdk_wasm;
 
 extern crate clap;

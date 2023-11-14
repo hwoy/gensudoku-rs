@@ -1,3 +1,5 @@
+#![cfg(all(target_arch = "wasm32", target_os = "emscripten"))]
+
 extern "C" {
     fn open(_: *const (), _: i32, _: i32) -> i32;
 }
